@@ -9,7 +9,6 @@ process.argv.forEach(arg => {
 	params.push(arg);
 });
 
-//Logic
 if (params.length < 3) {
 	console.log('NO PARAMS RECIEVED');
 	process.exit();
@@ -25,16 +24,15 @@ if (type !== 'finish' && type !== 'start') {
 
 exec('git flow release ' + type + ' ' + version + ' ' + (type == 'finish' ? '-m ' + version : ''),
 	function(err, ok) {
-
 		if (err !== null) {
 			console.log(err);
 			return;
 		}
-		console.log('git', ok);
+		console.log(ok);
 		if (type == 'start') {
-			exec('npm version '+version, function(err, ok){
-				if (err !==null)console.log(err);
-				console.log('npm', ok);
+			exec('npm version ' + version, function(err, ok) {
+				if (err !== null)console.log(err);
+				console.log(ok);
 			});
 		}
 
