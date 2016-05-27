@@ -1,70 +1,41 @@
 /**
- * Created by roger on 25/05/16.
+ * Created by manu on 5/27/16.
  */
+var exec = require('child_process').exec;
 
-const MODULE_NAME	 	= 'loopback-model-extender';
-const DEFAULT_FOLDER	= './extensions/';
+//Variables
+let params = [];
+process.argv.forEach(arg => {
+	params.push(arg);
+});
 
-var inform		= require('./services/inform');
-var utils		= require('./services/utils');
-var core		= require('./services/core');
+//Logic
+if (params.length < 3) {
+	console.log('NO PARAMS RECIEVED');
+	process.exit();
+}
 
-module.exports = function(options = {}) {
+let type = params[2];
+let version = params[3];
 
-	// Prepare
-	var app			= options.app || false;
-	inform			= inform(MODULE_NAME);
-	core			= core(options, utils, DEFAULT_FOLDER);
-	options.folder	= utils.addTrailingSlash(options.folder);
+if (type !== 'finish' && type !== 'start') {
+	console.log(type + ' is not a valid type');
+	process.exit();
+}
 
-	// Extend models of the app if available
-	if (app && app.models) {
-		extendAppModels(app);
-	}
+exec('git flow release ' + type + ' ' + version + ' ' + (type == 'finish' ? '-m ' + version : ''),
+	function(err, ok) {
 
-	// Return function if you want launch extender manually
-	return extend;
-
-
-	/*	Functions
-	 ---------------------------------------------------------------------------------*/
-
-	function extendAppModels(app) {
-		for (var k in app.models) {
-			if (!app.models.hasOwnProperty(k)) return;
-
-			let model       = app.models[k];
-			let extensions  = model.settings.extends || [];
-
-			extend(model, extensions);
+		if (err !== null) {
+			console.log(err);
+			return;
 		}
-	}
-
-	function extend(model, list) {
-
-		// Checks if inputs are valid
-		checkInputs(model, list);
-
-		// Transform any form of input to object
-		list = core.anyInputType2ObjectType(list);
-
-		// Remove the excluded list
-		list = core.removeExcludedItems(list);
-
-		// Load one by one all extensions
-		core.runFunctions(model, list);
-	}
-
-	function checkInputs(model, list) {
-		if (!model) {
-			inform.throwError('Must include the model as first argument.');
+		console.log('git', ok);
+		if (type == 'start') {
+			exec('npm version '+version, function(err, ok){
+				if (err !==null)console.log(err);
+				console.log('npm', ok);
+			});
 		}
-		if (!list) {
-			inform.throwError('Must include the list as second argument.');
-		}
-		if (!utils.isArray(list)) {
-			inform.throwError('Second argument list must be an Array.');
-		}
-	}
 
-};
+	});
