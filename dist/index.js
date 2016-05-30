@@ -1,2 +1,39 @@
-var cachedModules=[],exec=require("child_process").exec,params=[];process.argv.forEach(function(e){params.push(e)}),params.length<3&&(console.log("NO PARAMS RECIEVED"),process.exit());var type=params[2],version=params[3];"finish"!==type&&"start"!==type&&(console.log(type+" is not a valid type"),process.exit()),exec("git flow release "+type+" "+version+" "+("finish"==type?"-m "+version:""),function(e,o){return null!==e?void console.log(e):(console.log("git",o),void("start"==type&&exec("npm version "+version,function(e,o){null!==e&&console.log(e),console.log("npm",o)})))});
-//# sourceMappingURL=UGLIFY_SOURCE_MAP_TOKEN
+var cachedModules=[];'use strict';
+
+/**
+ * Created by manu on 5/27/16.
+ */
+var exec = require('child_process').exec;
+
+//Variables
+var params = [];
+process.argv.forEach(function (arg) {
+	params.push(arg);
+});
+
+if (params.length < 3) {
+	console.log('NO PARAMS RECIEVED');
+	process.exit();
+}
+
+var type = params[2];
+var version = params[3];
+
+if (type !== 'finish' && type !== 'start') {
+	console.log(type + ' is not a valid type');
+	process.exit();
+}
+
+exec('git flow release ' + type + ' ' + version + ' ' + (type == 'finish' ? '-m ' + version : ''), function (err, ok) {
+	if (err !== null) {
+		console.log(err);
+		return;
+	}
+	console.log(ok);
+	if (type == 'start') {
+		exec('npm version ' + version, function (err, ok) {
+			if (err !== null) console.log(err);
+			console.log(ok);
+		});
+	}
+});

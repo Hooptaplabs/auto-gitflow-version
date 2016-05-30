@@ -5,10 +5,10 @@
   "main": "dist/index.js",
   "scripts": {
     "build": "./node_modules/.bin/babel src --out-dir tmp-babel && node ./scripts/uglify && ./node_modules/.bin/rimraf tmp-babel",
-    "eslint": "./node_modules/.bin/eslint ./src; exit 0",
-    "test": "./node_modules/.bin/jasmine-node ./spec/ --color",
-    "test-watch": "./node_modules/.bin/jasmine-node --autotest ./spec/ --color",
-    "coverage": "./node_modules/.bin/istanbul cover ./node_modules/.bin/jasmine-node --captureExceptions ./spec/ --color && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js"
+    "lint": "eslint ./src && eslint ./test/*",
+    "test": "mocha --compilers js:babel-register",
+    "test:watch": "mocha --compilers js:babel-register --watch --reporter min",
+    "test:cover": "babel-node ./node_modules/.bin/isparta cover ./node_modules/.bin/_mocha -- --reporter min"
   },
   "repository": {
     "type": "git",
@@ -23,11 +23,15 @@
   "devDependencies": {
     "babel-cli": "^6.9.0",
     "babel-preset-es2015": "^6.9.0",
-    "coveralls": "^2.11.9",
-    "eslint": "^2.10.2",
-    "eslint-config-loopback": "^3.0.1",
+    "babel-register": "^6.9.0",
+    "chai": "^3.5.0",
+    "eslint": "^2.11.0",
+    "eslint-config-loopback": "^4.0.0",
+    "isparta": "^4.0.0",
     "istanbul": "^0.4.3",
     "jasmine-node": "^1.14.5",
+    "lodash": "^4.13.1",
+    "mocha": "^2.5.3",
     "node-uglifier": "^0.4.5",
     "rimraf": "^2.5.2"
   }
